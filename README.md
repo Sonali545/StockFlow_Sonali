@@ -1,4 +1,4 @@
-# StockFlow – Backend Case Study (Bynry)
+# StockFlow - Backend Case Study (Bynry)
 
 This repository contains my solution for the Backend Engineering Intern case study.
 
