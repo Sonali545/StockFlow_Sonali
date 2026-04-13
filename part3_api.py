@@ -1,40 +1,41 @@
 # Part 3: Low Stock Alert API
 
 # Assumptions:
-# - Recent sales means last 30 days
-# - Each product has a threshold field
-# - Each product has at least one supplier
+# - "Recent sales" refers to activity in the last 30 days
+# - Each product has a predefined threshold value
+# - A product can have at least one supplier
 
 @app.route('/api/companies/<int:company_id>/alerts/low-stock', methods=['GET'])
 def low_stock_alerts(company_id):
     alerts = []
 
-    # Get all warehouses of the company
+    # Fetch all warehouses for the given company
     warehouses = Warehouse.query.filter_by(company_id=company_id).all()
 
     for warehouse in warehouses:
-        # Get inventory for each warehouse
+        # Fetch inventory records for each warehouse
         inventories = Inventory.query.filter_by(warehouse_id=warehouse.id).all()
 
         for inv in inventories:
             product = Product.query.get(inv.product_id)
 
+            # Skip if product not found (safety check)
             if not product:
                 continue
 
             threshold = product.threshold
 
-            # Get recent sales (assumed function)
+            # Get recent sales data (assumed helper function)
             recent_sales = get_recent_sales(product.id)
 
-            # Skip if no recent sales
+            # If no recent sales, skip this product
             if recent_sales == 0:
                 continue
 
-            # Check low stock condition
+            # Check if stock is below threshold
             if inv.quantity < threshold:
-                
-                # Get supplier (assumed function)
+
+                # Fetch supplier details (assumed helper function)
                 supplier = get_supplier(product.id)
 
                 alert = {
@@ -57,12 +58,12 @@ def low_stock_alerts(company_id):
     }
 
 
-# Helper functions (basic assumptions)
+# Helper functions (basic logic for now)
 
 def get_recent_sales(product_id):
-    # Example logic: return average daily sales
-    # In real system, this would query sales table
-    return 2  # placeholder value
+    # Returns average daily sales (placeholder logic)
+    # In a real system, this would query a sales table
+    return 2
 
 
 def estimate_days(stock, daily_sales):
@@ -72,9 +73,9 @@ def estimate_days(stock, daily_sales):
 
 
 def get_supplier(product_id):
-    # Example: fetch first supplier
+    # Fetch first available supplier for the product
     ps = ProductSupplier.query.filter_by(product_id=product_id).first()
-    
+
     if not ps:
         return None
 
